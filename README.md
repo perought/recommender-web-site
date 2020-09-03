@@ -7,14 +7,13 @@
 * Supports user registration, login and logout.
 * Supports adding new books or movies. 
 * Users can rate books or movies which are not rated by user.
-* At home page popular books and movies are listing using True Bayesian Estimate formula.
+* At home page popular books and movies are listed using True Bayesian Estimate formula.
 * Books and movies search is supported.
-* Users profile page is listing users rated books and movies and their recommendation books and movies based on other users.
+* Users profile page is listed users rated books and movies and their recommended books and movies based on other users.
 ## Dependencies: ##
 * Pandas
 * NumPy
 * Django
-* beautifulsoup4
 * mysqlclient
 * MySQL
 * scikit-learn
@@ -23,9 +22,10 @@
 * django-crispy-forms
 * (requirements texts are verbose)
 ## Run: ##
-* First you should do MySQL configurations. Once you download the repository run `python manage.py makemigrations` and `python manage.py migrate` 
-then create sql scripts for given 4 cvs files by using code piece from Jupyter Notebook. Run sql script. Copy your favorite image to _rcsystem/static/rcsystem/images/_.
-When it is finished run `python manage.py runserver` and go to http://127.0.0.1:8000/
+* First you should do MySQL configurations. Once you download the repository run following commands on the same directory with `manage.py`: 
+`python manage.py makemigrations` and `python manage.py migrate` then create sql scripts for given 4 cvs files and users by using code piece from Jupyter Notebook. 
+Run sql script. Copy your favorite image to _rcsystem/static/rcsystem/images/_. When it is finished run `python manage.py runserver` and go to http://127.0.0.1:8000/.
+Create a new user for you, rate at least 5 books and 5 movies then get your recommended books and movies!
 ## Datasets: ##
 * Book dataset:
   * I use datasets from Kaggle. In the Jupyter Notebook file (it is a little messy) you can see how the datasets are processed, merged and models are created. 
@@ -60,9 +60,11 @@ When it is finished run `python manage.py runserver` and go to http://127.0.0.1:
     </tr>
 </table>
 
+## TODO: ##
+* Add generate sql script python file for book data and ratings, movie data and ratings, auth_user
 ### Bugs and Limitations: ###
 * To speed up and because of not matching user ratings dataset, I use first 671 users from the datasets.
-* For limitation of physical memory, only first 10000 movies considered for content based recommendations.
+* Due to limitation of physical memory, only first 10000 movies considered for content based recommendations.
 * At home page, because of card views, show and less system not working properly.
 * I am not sure if the user based recommender system is working properly.
 * Except for popular books and movies order, recommend books and movies are not listing order of similarty score, instead, listings are according to order of their indices.
