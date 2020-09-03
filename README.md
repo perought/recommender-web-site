@@ -32,7 +32,33 @@ When it is finished run `python manage.py runserver` and go to http://127.0.0.1:
 * Movie dataset:
   * Again, I use Kaggle datasets. A movie poster dataset and general movie dataset is merged.
 ## Images: ##
-* image_1
+<table>
+    <tr>
+        <td align="center">
+            <img src="https://github.com/perought/recommender-web-site/blob/master/test/home-page.jpg" alt="home-page" width="384" height="216">
+            <br />
+            <i> home page of the site </i>
+        </td>
+        <td align="center">
+            <img src="https://github.com/perought/recommender-web-site/blob/master/test/profile.jpg" alt="profile" width="384" height="216">
+            <br />
+            <i> user profile </i>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="https://github.com/perought/recommender-web-site/blob/master/test/recommender.jpg" alt="recommender" width="384" height="216">
+            <br />
+            <i> recommend books of this book </i>
+        </td>
+        <td align="center">
+            <img src="https://github.com/perought/recommender-web-site/blob/master/test/search.jpg" alt="serach" width="384" height="216">
+            <br />
+            <i> search movies </i>
+        </td>
+    </tr>
+</table>
+
 ### Bugs and Limitations: ###
 * To speed up and because of not matching user ratings dataset, I use first 671 users from the datasets.
 * For limitation of physical memory, only first 10000 movies considered for content based recommendations.
