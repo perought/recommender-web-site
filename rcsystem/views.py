@@ -14,7 +14,6 @@ from surprise import dump
 from .models import BookDatabase, BookRatings, MovieDatabase, MovieRatings, DBBook, DBUserAddedBook, DBUserRatedBook
 from .forms import AddBookForm, AddMovieForm, DBCommentForm, DBFavoriteSystemForm, DBUserRatedBookForm
 
-
 books_dataset = pd.read_csv("rcsystem/static/books_dataset.csv")
 books_count_vec = CountVectorizer(stop_words='english')
 books_count_matrix = books_count_vec.fit_transform(books_dataset['soup'])
@@ -22,7 +21,6 @@ books_cosine_sim = cosine_similarity(books_count_matrix, books_count_matrix)
 
 books_ratings = pd.read_csv("rcsystem/static/books_ratings.csv")
 _, user_based_book_algo = dump.load("rcsystem/static/user_based_book.dump")
-
 
 movies_dataset = pd.read_csv("rcsystem/static/movies_dataset.csv")
 movies_count_vec = CountVectorizer(stop_words='english')
@@ -39,9 +37,11 @@ class HomeView(View):
         popular_movies = self.popular(movies_dataset)
 
         popular_books = BookDatabase.objects.filter(pk__in=popular_books)
-        popular_movies = MovieDatabase.objects.filter(id__in=popular_movies)
+        ordered_popular_movies = []
+        for popular_movie in popular_movies:
+            ordered_popular_movies.append(MovieDatabase.objects.get(id=popular_movie))
 
-        context = {"popular_books": popular_books, "popular_movies": popular_movies}
+        context = {"popular_books": popular_books, "popular_movies": ordered_popular_movies}
         return render(request, "home.html", context=context)
 
     def popular(self, dataset):
@@ -256,7 +256,8 @@ class MovieDetailView(View):
         rating.save()
 
         with open("rcsystem/static/movies_ratings.csv", "a") as f:
-            append = str(request.user.id) + "," + str(movie_index) + "," + str(rated) + "," + str(int(time.time())) + "\n"
+            append = str(request.user.id) + "," + str(movie_index) + "," + str(rated) + "," + str(
+                int(time.time())) + "\n"
             f.write(append)
 
         return HttpResponseRedirect(self.request.path_info)
@@ -266,10 +267,10 @@ class Search(View):
     def get(self, request):
         search_term = request.GET.get('search')
 
-        if request.GET.get('submit') == 'for-books':
+        if request.GET.get('submit') == 'Search books':
             searched_for = BookDatabase.objects.all().filter(title__icontains=search_term)[:50]
             search_type = "books"
-        elif request.GET.get('submit') == 'for-movies':
+        elif request.GET.get('submit') == 'Search movies':
             searched_for = MovieDatabase.objects.all().filter(title__icontains=search_term)[:50]
             search_type = "movies"
         else:
@@ -408,4 +409,3 @@ class OldBookDetail(View):
         else:
             favorite = DBFavoriteSystemForm()
         return render(request, 'old_book_detail.html', {'form': form, 'favorite': user_rating})
-

@@ -63,6 +63,9 @@ class MovieDatabase(models.Model):
     poster = models.URLField()
     movie_index = models.IntegerField(default=-1)
 
+    class Meta:
+        ordering = ['movie_index']
+
 
 class MovieRatings(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)

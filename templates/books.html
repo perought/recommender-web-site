@@ -45,7 +45,7 @@
         <form action="{% url 'recommender:search' %}" method="GET">
             <i class="material-icons yellow">face</i>
             <input name="search" type="text" placeholder="Search...">
-            <input type="submit" name="submit" value="for-books">
+            <input type="submit" name="submit" value="Search books">
         </form>
         <div class="col-lg-20 col-md-10 mx-auto">
             {% for book in books %}

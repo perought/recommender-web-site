@@ -45,7 +45,7 @@
         <form action="{% url 'recommender:search' %}" method="GET">
             <i class="material-icons yellow">face</i>
             <input name="search" type="text" placeholder="Search...">
-            <input type="submit" name="submit" value="for-movies">
+            <input type="submit" name="submit" value="Search movies">
         </form>
         <div class="col-lg-20 col-md-10 mx-auto">
             {% for movie in movies %}
@@ -65,61 +65,61 @@
                         <span> Category: {{ movie.genres }} </span>
                         <br/>
                         <span>
-                        {% if movie.vote_average < 0.5 %}
+                        {% if movie.vote_average < "1" %}
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 1 %}
+                        {% elif movie.vote_average < "2" %}
                             <span class="material-icons yellow"> star_half </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 1.5 %}
+                        {% elif movie.vote_average < "3" %}
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 2 %}
-                            <span class="material-icons yellow"> star </span>
-                            <span class="material-icons yellow"> star_half </span>
-                            <span class="material-icons yellow"> star_outline </span>
-                            <span class="material-icons yellow"> star_outline </span>
-                            <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 2.5 %}
-                            <span class="material-icons yellow"> star </span>
-                            <span class="material-icons yellow"> star </span>
-                            <span class="material-icons yellow"> star_outline </span>
-                            <span class="material-icons yellow"> star_outline </span>
-                            <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 3 %}
-                            <span class="material-icons yellow"> star </span>
+                        {% elif movie.vote_average < "4" %}
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star_half </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 3.5 %}
+                            <span class="material-icons yellow"> star_outline </span>
+                        {% elif movie.vote_average < "5" %}
+                            <span class="material-icons yellow"> star </span>
+                            <span class="material-icons yellow"> star </span>
+                            <span class="material-icons yellow"> star_outline </span>
+                            <span class="material-icons yellow"> star_outline </span>
+                            <span class="material-icons yellow"> star_outline </span>
+                        {% elif movie.vote_average < "6" %}
+                            <span class="material-icons yellow"> star </span>
+                            <span class="material-icons yellow"> star </span>
+                            <span class="material-icons yellow"> star_half </span>
+                            <span class="material-icons yellow"> star_outline </span>
+                            <span class="material-icons yellow"> star_outline </span>
+                        {% elif movie.vote_average < "7" %}
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star_outline </span>
                             <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 4 %}
+                        {% elif movie.vote_average < "8" %}
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star_half </span>
                             <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 4.5 %}
+                        {% elif movie.vote_average < "9" %}
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star_outline </span>
-                        {% elif movie.vote_average < 5 %}
+                        {% elif movie.vote_average < "10" %}
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
                             <span class="material-icons yellow"> star </span>
