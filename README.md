@@ -4,6 +4,7 @@
 * Books recommender is based on book title, author, genres and description.
 * Movies recommender is based on book title, casts, genres, description and director.
 * User based recommend is supported. Users have to rate at least 5 items to see their recommendations.
+* Supports user registration, login and logout.
 * Supports adding new books or movies. 
 * Users can rate books or movies which are not rated by user.
 * At home page popular books and movies are listing using True Bayesian Estimate formula.
