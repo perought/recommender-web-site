@@ -36,12 +36,15 @@ class HomeView(View):
         popular_books = self.popular(books_dataset)
         popular_movies = self.popular(movies_dataset)
 
-        popular_books = BookDatabase.objects.filter(pk__in=popular_books)
+        ordered_popular_books = []
+        for popular_book in popular_books:
+            ordered_popular_books.append(BookDatabase.objects.get(pk=popular_book))
+
         ordered_popular_movies = []
         for popular_movie in popular_movies:
             ordered_popular_movies.append(MovieDatabase.objects.get(id=popular_movie))
 
-        context = {"popular_books": popular_books, "popular_movies": ordered_popular_movies}
+        context = {"popular_books": ordered_popular_books, "popular_movies": ordered_popular_movies}
         return render(request, "home.html", context=context)
 
     def popular(self, dataset):
