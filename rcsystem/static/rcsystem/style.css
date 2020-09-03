@@ -1,0 +1,50 @@
+li a {
+    color: black;
+}
+
+.masthead {
+    background: white url("images/sunset.jpg") no-repeat;
+}
+
+body {
+	font-family: "Roboto";
+}
+
+article {
+	text-align: center;
+}
+
+h1 {
+	color: white;
+	text-align: center;
+}
+
+#header-h3 {
+	text-align: center;
+	padding-top: 15%;
+	font-size: 60px;
+}
+
+#header-h4 {
+	text-align: center;
+	font-size: 20px;
+	padding-top: 20px;
+	padding-bottom: 60px;
+}
+
+#blog-bg {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	opacity: 0.3;
+	z-index: -1;
+}
+
+#error {
+	color: #eb4d4d;
+}
+
+.more-less {
+	color: rgb(12, 49, 222);
+	cursor: pointer;
+}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %} Book Detail {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="post-preview">
+                    <a href="#"> <h2 class="post-title"> {{ book.title }} </h2> </a>
+                    <p class="post-meta"> Publication date: {{ book.pub_date }} </p>
+                    <p class="post-meta"> Author: {{ book.author }} </p>
+                    <p class="post-meta"> Publisher: {{ book.publisher }} </p>
+                    <p class="post-meta"> Category: {{ book.book_category }} </p>
+                    <p class="post-meta"> Favorites count: {{ book.book_favorites_count }} </p>
+                    <p class="post-meta"> Overall Favorites: {{ book.book_overall_favorite }} </p>
+                    <img src="{{ book.img_url_l }}" alt="book-image">
+                    <p> {{ summary }} </p>
+                    <p>
+                        {% if user.is_authenticated %}
+                            {% if user_rated == 0 %}
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    {{ favorite }}
+                                    <input type="submit" name="submit-favorite" value="Favorite" />
+                                </form>
+                            {% else %}
+                                <p class="post-meta"> Your star: {{ user_rated }} </p>
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    <input type="submit" name="add-to-your-book" value="Add to your books" />
+                                </form>
+
+                            {% endif %}
+                        {% endif %}
+                    </p>
+
+                    <hr>
+                    {% for comment in book.comments_book.all %}
+                        <div class="media mb-4">
+                            <div class="media-body">
+                                <h5 class="mt-0">{{ comment.author }}</h5>
+                                <p>{{ comment.text|linebreaks }}</p>
+                                <p>{{ comment.created_date }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No comments here yet</p>
+                    {% endfor %}
+
+                    {% if user.is_authenticated %}
+                        <div class="card my-4">
+                            <h5 class="card-header">Leave a comment:</h5>
+                            <div class="card-body">
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card my-4">
+                            <h5 class="card-header">Sign in to leave a comment:</h5>
+                            <div class="card-body">
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

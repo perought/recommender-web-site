@@ -1,0 +1,483 @@
+<style>
+    .material-icons.yellow {
+        color: rgb(255, 188, 0);
+        font-size: 18px;
+        font-weight: lighter;
+        font-style: normal;
+    }
+
+    .rating-span {
+        color: rgb(72, 99, 231);
+    }
+
+    .not-enough {
+        color: rgb(221, 47, 47);
+    }
+
+    .movie-title {
+        font-size: 20px;
+        font-weight: bold
+    }
+</style>
+
+<script type="text/javascript">
+    function showMore(index) {
+        let x = document.getElementById("movie-summary-" + index);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        }
+        else {
+            x.style.display = "none";
+        }
+        x = document.getElementById("movie-summaries-" + index);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        }
+        else {
+            x.style.display = "none";
+        }
+    }
+</script>
+
+{% extends 'base.html' %}
+
+{% block title %} Profile {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container">
+        <div class="col-lg-20 col-md-10 mx-auto">
+            <div class="row pt-4">
+                <div class="col col-8">
+                    <span> Name: {{ profile.username }} </span>
+                    <br/>
+
+                    <hr/>
+
+                    <span> Books rated: </span>
+                    <br/>
+
+                    {% for book in user_rated_books %}
+                        <div class="col col-4">
+                            <img src="{{ book.image_url }}" alt="">
+                        </div>
+                        <div class="col col-8">
+                            <span class="book-title"> {{ book.title }} </span>
+                            <br/>
+                            <span> by {{ book.authors }} </span>
+                            <br/>
+                            <span> Category: {{ book.categories }} </span>
+                            <br/>
+                            <span>
+                            {% if book.average_rating < 0.5 %}
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 1 %}
+                                <span class="material-icons yellow"> star_half </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 1.5 %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 2 %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star_half </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 2.5 %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 3 %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star_half </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 3.5 %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 4 %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star_half </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 4.5 %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star_outline </span>
+                            {% elif book.average_rating < 5 %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star_half </span>
+                            {% else %}
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                                <span class="material-icons yellow"> star </span>
+                            {% endif %}
+                            <span class="rating-span"> {{ book.average_rating }} · {{ book.ratings_count }} </span>
+                            </span>
+                            <p id="book-summary-0"> {{ book.description|truncatechars:360 }}
+                                {% if book.description|length > 360 %}
+                                    <span class="more-less" onclick="showMore(0);"> more </span>
+                                {% endif %}
+                            </p>
+                            <p id="book-summaries-0" style="display:none"> {{ book.description }}
+                                <span class="more-less" onclick="showMore(0);"> less </span>
+                            </p>
+                            <p> Comments: {{ book.work_text_reviews_count }} </p>
+
+                            <br/>
+                            <hr>
+                            <br/>
+                        </div>
+                    {% endfor %}
+
+                    <hr/>
+
+                    <span> Movies rated: </span>
+                    <br/>
+
+                    {% for movie in user_rated_movies %}
+                        <div class="row pt-4">
+                            <div class="col col-4">
+                                <img src="{{ movie.poster }}" alt="">
+                            </div>
+                            <div class="col col-8">
+                                <span class="movie-title"> {{ movie.title }} </span>
+                                <br/>
+                                <span> by {{ movie.director }} </span>
+                                <br/>
+                                <span> Stars: {{ movie.casts }} </span>
+                                <br/>
+                                <span> Category: {{ movie.genres }} </span>
+                                <br/>
+                                <span>
+                                {% if movie.vote_average < 0.5 %}
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 1 %}
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 1.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 2 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 2.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 3 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 3.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 4 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 4.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < 5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                {% else %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                {% endif %}
+                                <span class="rating-span"> {{ movie.vote_average }} · {{ movie.vote_count }} </span>
+                                </span>
+                                <p id="movie-summary-{{ forloop.counter }}"> {{ movie.overview|truncatechars:360 }}
+                                    {% if movie.overview|length > 360 %}
+                                        <span class="more-less" onclick="showMore({{ forloop.counter }});"> more </span>
+                                    {% endif %}
+                                </p>
+                                <p id="movie-summaries-{{ forloop.counter }}" style="display:none"> {{ movie.overview }}
+                                    <span class="more-less" onclick="showMore({{ forloop.counter }});"> less </span>
+                                </p>
+                                <hr>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <hr/>
+
+                    <span> Recommended books for you: </span>
+                    <br/>
+
+                    {% if recommend_books != 0 %}
+
+                        {% for rec_book in recommend_books %}
+                        <div class="row pt-4">
+                            <div class="col col-4">
+                                <img src="{{ rec_book.image_url }}" alt="">
+                            </div>
+                            <div class="col col-8">
+                                <span class="book-title"> {{ rec_book.title }} </span>
+                                <br/>
+                                <span> by {{ rec_book.authors }} </span>
+                                <br/>
+                                <span> Category: {{ rec_book.categories }} </span>
+                                <br/>
+                                <span>
+                                {% if rec_book.average_rating < 0.5 %}
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 1 %}
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 1.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 2 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 2.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 3 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 3.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 4 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 4.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_book.average_rating < 5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                {% else %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                {% endif %}
+                                <span class="rating-span"> {{ rec_book.average_rating }} · {{ rec_book.ratings_count }} </span>
+                                </span>
+                                <p id="book-summary-{{ forloop.counter }}"> {{ rec_book.description|truncatechars:360 }}
+                                    {% if book.description|length > 360 %}
+                                        <span class="more-less" onclick="showMore({{ forloop.counter }});"> more </span>
+                                    {% endif %}
+                                </p>
+                                <p id="book-summaries-{{ forloop.counter }}" style="display:none"> {{ rec_book.description }}
+                                    <span class="more-less" onclick="showMore({{ forloop.counter }});"> less </span>
+                                </p>
+                                <p> Comments: {{ rec_book.work_text_reviews_count }} </p>
+                                <hr>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% else %}
+                        <span class="not-enough"> &nbsp; You are not rated enough movies </span>
+                        <br/>
+                    {% endif %}
+
+                    <hr/>
+
+                    <span> Recommended movies for you: </span>
+                    <br/>
+
+                    {% if recommend_movies != 0 %}
+
+                        {% for rec_movie in recommend_movies %}
+                        <div class="row pt-4">
+                            <div class="col col-4">
+                                <img src="{{ rec_movie.poster }}" alt="">
+                            </div>
+                            <div class="col col-8">
+                                <span class="movie-title"> {{ rec_movie.title }} </span>
+                                <br/>
+                                <span> by {{ rec_movie.director }} </span>
+                                <br/>
+                                <span> Stars: {{ rec_movie.casts }} </span>
+                                <br/>
+                                <span> Category: {{ rec_movie.genres }} </span>
+                                <br/>
+                                <span>
+                                {% if rec_movie.vote_average < 0.5 %}
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 1 %}
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 1.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 2 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 2.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 3 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 3.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 4 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 4.5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < 5 %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                {% else %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                {% endif %}
+                                <span class="rating-span"> {{ rec_movie.vote_average }} · {{ rec_movie.vote_count }} </span>
+                                </span>
+                                <p id="movie-summary-{{ forloop.counter }}"> {{ rec_movie.overview|truncatechars:360 }}
+                                    {% if movie.overview|length > 360 %}
+                                        <span class="more-less" onclick="showMore({{ forloop.counter }});"> more </span>
+                                    {% endif %}
+                                </p>
+                                <p id="movie-summaries-{{ forloop.counter }}" style="display:none"> {{ rec_movie.overview }}
+                                    <span class="more-less" onclick="showMore({{ forloop.counter }});"> less </span>
+                                </p>
+                                <hr>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% else %}
+                        <span class="not-enough"> &nbsp; You are not rated enough books </span>
+                        <br/>
+                    {% endif %}
+
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+
+{% endblock %}
