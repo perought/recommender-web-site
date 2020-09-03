@@ -34,6 +34,7 @@ and go to http://127.0.0.1:8000/
 ## Images: ##
 * image_1
 ### Bugs and Limitations: ###
+* To speed up and because of not matching user ratings dataset, I use first 671 users from the datasets.
 * For limitation of physical memory, only first 10000 movies considered for content based recommendations.
 * At home page, because of card views, show and less system not working properly.
 * I am not sure if the user based recommender system is working properly.
