@@ -23,8 +23,8 @@
 * (requirements texts are verbose)
 ## Run: ##
 * First you should do MySQL configurations. Once you download the repository run `python manage.py makemigrations` and `python manage.py migrate` 
-then create sql scripts for given 4 cvs files by using code piece from Jupyter Notebook. Run sql script. When it is finished run `python manage.py runserver` 
-and go to http://127.0.0.1:8000/
+then create sql scripts for given 4 cvs files by using code piece from Jupyter Notebook. Run sql script. Copy your favorite image to _rcsystem/static/rcsystem/images/_.
+When it is finished run `python manage.py runserver` and go to http://127.0.0.1:8000/
 ## Datasets: ##
 * Book dataset:
   * I use datasets from Kaggle. In the Jupyter Notebook file (it is a little messy) you can see how the datasets are processed, merged and models are created. 
