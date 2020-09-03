@@ -73,7 +73,7 @@ class ProfileView(View):
             user_rated_movies = MovieRatings.objects.filter(user_id=user.id)
         except MovieRatings.DoesNotExist:
             return HttpResponseRedirect(reverse('recommender:index'))
-        print("user_rated_movies:", user_rated_movies)
+
         user_rated_movies_list = []
         for m in user_rated_movies:
             user_rated_movies_list.append(m.movie_id)
