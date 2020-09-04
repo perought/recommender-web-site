@@ -194,7 +194,8 @@ class BooksDetailView(View):
         context = {
             'book': book,
             'recommend_books': recommend_books,
-            'is_rated': is_rated
+            'is_rated': is_rated,
+            'user': request.user
         }
         return render(request, 'book_recommend.html', context=context)
 
@@ -260,7 +261,8 @@ class MovieDetailView(View):
             context = {
                 'movie': movie,
                 'recommend_movies': "recommend_movies",
-                'is_rated': is_rated
+                'is_rated': is_rated,
+                'user': request.user
             }
             return render(request, 'movie_recommend.html', context=context)
 

@@ -142,18 +142,22 @@
                     <br/>
 
                     {% if is_rated == 0 %}
-                        <form action="" method="post">
-                            {% csrf_token %}
-                            <label for="favorite"> Your rating: </label>
-                            <select id="favorite" name="rating">
-                                <option value="1"> 1 </option>
-                                <option value="2"> 2 </option>
-                                <option value="3"> 3 </option>
-                                <option value="4"> 4 </option>
-                                <option value="5"> 5 </option>
-                            </select>
-                            <input type="submit" name="submit" value="Submit"/>
-                        </form>
+                        {% if user.is_authenticated %}
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <label for="favorite"> Your rating: </label>
+                                <select id="favorite" name="rating">
+                                    <option value="1"> 1 </option>
+                                    <option value="2"> 2 </option>
+                                    <option value="3"> 3 </option>
+                                    <option value="4"> 4 </option>
+                                    <option value="5"> 5 </option>
+                                </select>
+                                <input type="submit" name="submit" value="Submit"/>
+                            </form>
+                        {% else %}
+                            <p> Sign in to rate </p>
+                        {% endif %}
                     {% else %}
                         <p> Your rating: {{ is_rated }} </p>
                     {% endif %}
