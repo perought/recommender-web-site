@@ -10,6 +10,7 @@
 * At home page popular books and movies are listed using True Bayesian Estimate formula.
 * Books and movies search is supported.
 * Users profile page is listed users rated books and movies and their recommended books and movies based on other users.
+* There is another book database system on the site (_old_books/_). This also supports comment system.
 ## Dependencies: ##
 * Pandas
 * NumPy
@@ -63,6 +64,7 @@ Create a new user for you, rate at least 5 books and 5 movies then get your reco
 ## TODO: ##
 * Add generate sql script python file for book data and ratings, movie data and ratings, auth_user
 ### Bugs and Limitations: ###
+* Only first 30 books or movies are fetching from database. When I fetch all of them, it is trying to send all items to site and this process slows down the system.
 * To speed up and because of not matching user ratings dataset, I use first 671 users from the datasets.
 * Due to limitation of physical memory, only first 10000 movies considered for content based recommendations.
 * At home page, because of card views, show and less system not working properly.
