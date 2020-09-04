@@ -163,7 +163,7 @@
                     {% for movie in user_rated_movies %}
                         <div class="row pt-4">
                             <div class="col col-4">
-                                <img src="{{ movie.poster }}" alt="">
+                                <img src="{{ movie.poster }}" alt="" width="182" height="268">
                             </div>
                             <div class="col col-8">
                                 <span class="movie-title"> {{ movie.title }} </span>
@@ -175,61 +175,61 @@
                                 <span> Category: {{ movie.genres }} </span>
                                 <br/>
                                 <span>
-                                {% if movie.vote_average < 0.5 %}
+                                {% if movie.vote_average < "1" %}
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 1 %}
+                                {% elif movie.vote_average < "2" %}
                                     <span class="material-icons yellow"> star_half </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 1.5 %}
+                                {% elif movie.vote_average < "3" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 2 %}
-                                    <span class="material-icons yellow"> star </span>
-                                    <span class="material-icons yellow"> star_half </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 2.5 %}
-                                    <span class="material-icons yellow"> star </span>
-                                    <span class="material-icons yellow"> star </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 3 %}
-                                    <span class="material-icons yellow"> star </span>
+                                {% elif movie.vote_average < "4" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_half </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 3.5 %}
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < "5" %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < "6" %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif movie.vote_average < "7" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 4 %}
+                                {% elif movie.vote_average < "8" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_half </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 4.5 %}
+                                {% elif movie.vote_average < "9" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif movie.vote_average < 5 %}
+                                {% elif movie.vote_average < "10" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
@@ -375,7 +375,7 @@
                         {% for rec_movie in recommend_movies %}
                         <div class="row pt-4">
                             <div class="col col-4">
-                                <img src="{{ rec_movie.poster }}" alt="">
+                                <img src="{{ rec_movie.poster }}" alt="" width="182" height="268">
                             </div>
                             <div class="col col-8">
                                 <span class="movie-title"> {{ rec_movie.title }} </span>
@@ -387,61 +387,61 @@
                                 <span> Category: {{ rec_movie.genres }} </span>
                                 <br/>
                                 <span>
-                                {% if rec_movie.vote_average < 0.5 %}
+                                {% if rec_movie.vote_average < "1" %}
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 1 %}
+                                {% elif rec_movie.vote_average < "2" %}
                                     <span class="material-icons yellow"> star_half </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 1.5 %}
+                                {% elif rec_movie.vote_average < "3" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 2 %}
-                                    <span class="material-icons yellow"> star </span>
-                                    <span class="material-icons yellow"> star_half </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 2.5 %}
-                                    <span class="material-icons yellow"> star </span>
-                                    <span class="material-icons yellow"> star </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                    <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 3 %}
-                                    <span class="material-icons yellow"> star </span>
+                                {% elif rec_movie.vote_average < "4" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_half </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 3.5 %}
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < "5" %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < "6" %}
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star </span>
+                                    <span class="material-icons yellow"> star_half </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                    <span class="material-icons yellow"> star_outline </span>
+                                {% elif rec_movie.vote_average < "7" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_outline </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 4 %}
+                                {% elif rec_movie.vote_average < "8" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_half </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 4.5 %}
+                                {% elif rec_movie.vote_average < "9" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star_outline </span>
-                                {% elif rec_movie.vote_average < 5 %}
+                                {% elif rec_movie.vote_average < "10" %}
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>
                                     <span class="material-icons yellow"> star </span>

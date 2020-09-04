@@ -11,8 +11,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from surprise import dump
 
-from .models import BookDatabase, BookRatings, MovieDatabase, MovieRatings, DBBook, DBUserAddedBook, DBUserRatedBook
-from .forms import AddBookForm, AddMovieForm, DBCommentForm, DBFavoriteSystemForm, DBUserRatedBookForm
+from .models import BookDatabase, BookRatings, MovieDatabase, MovieRatings, \
+    DBBook, DBUserAddedBook, DBUserRatedBook
+from .forms import AddBookForm, AddMovieForm, DBCommentForm, \
+    DBFavoriteSystemForm, DBUserRatedBookForm
 
 books_dataset = pd.read_csv("rcsystem/static/books_dataset.csv")
 books_count_vec = CountVectorizer(stop_words='english')
@@ -24,7 +26,8 @@ _, user_based_book_algo = dump.load("rcsystem/static/user_based_book.dump")
 
 movies_dataset = pd.read_csv("rcsystem/static/movies_dataset.csv")
 movies_count_vec = CountVectorizer(stop_words='english')
-movies_count_matrix = movies_count_vec.fit_transform(movies_dataset['soup'][:10000])
+movies_count_matrix = movies_count_vec.fit_transform(
+    movies_dataset['soup'][:10000])
 movies_cosine_sim = cosine_similarity(movies_count_matrix, movies_count_matrix)
 
 movies_ratings = pd.read_csv("rcsystem/static/movies_ratings.csv")
@@ -38,13 +41,18 @@ class HomeView(View):
 
         ordered_popular_books = []
         for popular_book in popular_books:
-            ordered_popular_books.append(BookDatabase.objects.get(pk=popular_book))
+            ordered_popular_books.append(
+                BookDatabase.objects.get(pk=popular_book))
 
         ordered_popular_movies = []
         for popular_movie in popular_movies:
-            ordered_popular_movies.append(MovieDatabase.objects.get(id=popular_movie))
+            ordered_popular_movies.append(
+                MovieDatabase.objects.get(id=popular_movie))
 
-        context = {"popular_books": ordered_popular_books, "popular_movies": ordered_popular_movies}
+        context = {
+            "popular_books": ordered_popular_books,
+            "popular_movies": ordered_popular_movies
+        }
         return render(request, "home.html", context=context)
 
     def popular(self, dataset):
@@ -73,22 +81,6 @@ class ProfileView(View):
             return HttpResponseRedirect(reverse('recommender:index'))
 
         try:
-            user_rated_movies = MovieRatings.objects.filter(user_id=user.id)
-        except MovieRatings.DoesNotExist:
-            return HttpResponseRedirect(reverse('recommender:index'))
-
-        user_rated_movies_list = []
-        for m in user_rated_movies:
-            user_rated_movies_list.append(m.movie_id)
-
-        user_rated_movies = MovieDatabase.objects.filter(movie_index__in=user_rated_movies_list)
-        if len(user_rated_movies) >= 5:
-            recommend_movies = tuple(self.get_user_based_recommend(user.id, book=False))
-            recommend_movies = MovieDatabase.objects.filter(movie_index__in=recommend_movies)
-        else:
-            recommend_movies = 0
-
-        try:
             user_rated_books = BookRatings.objects.filter(user_id=user.id)
         except BookRatings.DoesNotExist:
             return HttpResponseRedirect(reverse('recommender:index'))
@@ -97,12 +89,34 @@ class ProfileView(View):
         for b in user_rated_books:
             user_rated_books_list.append(b.book_id)
 
-        user_rated_books = BookDatabase.objects.filter(pk__in=user_rated_books_list)
+        user_rated_books = BookDatabase.objects.filter(
+            pk__in=user_rated_books_list)
         if len(user_rated_books) >= 5:
             recommend_books = tuple(self.get_user_based_recommend(user.id))
-            recommend_books = BookDatabase.objects.filter(pk__in=recommend_books)
+            recommend_books = BookDatabase.objects.filter(
+                pk__in=recommend_books)
         else:
             recommend_books = 0
+
+        try:
+            user_rated_movies = MovieRatings.objects.filter(user_id=user.id)
+        except MovieRatings.DoesNotExist:
+            return HttpResponseRedirect(reverse('recommender:index'))
+
+        user_rated_movies_list = []
+        for m in user_rated_movies:
+            user_rated_movies_list.append(m.movie_id)
+
+        user_rated_movies = MovieDatabase.objects.filter(
+            id__in=user_rated_movies_list)
+        if len(user_rated_movies) >= 5:
+            recommend_movies = tuple(
+                self.get_user_based_recommend(user.id, book=False))
+            print("recommend_movies:", recommend_movies)
+            recommend_movies = MovieDatabase.objects.filter(
+                id__in=recommend_movies)
+        else:
+            recommend_movies = 0
 
         context = {
             'profile': user,
@@ -116,27 +130,31 @@ class ProfileView(View):
     def get_user_based_recommend(self, user_id, book=True):
         if book:
             book_rating_pred = []
-            user_not_rated = books_ratings[~(books_ratings['user_id'] == user_id)]
+            user_not_rated = books_ratings[
+                ~(books_ratings['user_id'] == user_id)]
             for book_id in user_not_rated["book_id"].unique().tolist():
                 pred = user_based_book_algo.predict(user_id, book_id, 3)
                 try:
                     book_rating_pred.append((book_id, pred.est))
                 except:
                     pass
-            book_rating_pred = sorted(book_rating_pred, key=lambda x: x[1], reverse=True)[:10]
+            book_rating_pred = sorted(book_rating_pred, key=lambda x: x[1],
+                                      reverse=True)[:10]
             book_indices = [i[0] for i in book_rating_pred]
             return book_indices
 
         else:
             movie_rating_pred = []
-            user_not_rated = movies_ratings[~(movies_ratings['user_id'] == user_id)]
+            user_not_rated = movies_ratings[
+                ~(movies_ratings['user_id'] == user_id)]
             for movie_id in user_not_rated["movie_id"].unique().tolist():
                 pred = user_based_movie_algo.predict(user_id, movie_id, 3)
                 try:
                     movie_rating_pred.append((movie_id, pred.est))
                 except:
                     pass
-            movie_rating_pred = sorted(movie_rating_pred, key=lambda x: x[1], reverse=True)[:10]
+            movie_rating_pred = sorted(movie_rating_pred, key=lambda x: x[1],
+                                       reverse=True)[:10]
             movie_indices = [i[0] for i in movie_rating_pred]
             return movie_indices
 
@@ -165,14 +183,19 @@ class BooksDetailView(View):
         is_rated = 0
         if request.user.is_authenticated:
             try:
-                is_rated = BookRatings.objects.get(user_id=request.user.id, book_id=pk).rating
+                is_rated = BookRatings.objects.get(user_id=request.user.id,
+                                                   book_id=pk).rating
             except BookRatings.DoesNotExist:
                 pass
 
         recommend_books = tuple(self.get_recommendations(book.title))
         recommend_books = BookDatabase.objects.filter(pk__in=recommend_books)
 
-        context = {'book': book, 'recommend_books': recommend_books, 'is_rated': is_rated}
+        context = {
+            'book': book,
+            'recommend_books': recommend_books,
+            'is_rated': is_rated
+        }
         return render(request, 'book_recommend.html', context=context)
 
     def get_index_from_title(self, title):
@@ -195,7 +218,8 @@ class BooksDetailView(View):
         rating.save()
 
         with open("rcsystem/static/books_ratings.csv", "a") as f:
-            append = str(pk) + "," + str(request.user.id) + "," + request.POST["rating"] + "\n"
+            append = str(pk) + "," + str(request.user.id) + "," + request.POST[
+                "rating"] + "\n"
             f.write(append)
 
         return HttpResponseRedirect(self.request.path_info)
@@ -225,17 +249,30 @@ class MovieDetailView(View):
         is_rated = 0
         if request.user.is_authenticated:
             try:
-                is_rated = MovieRatings.objects.get(user_id=request.user.id, movie_id=movie_index).rating
+                actual = MovieDatabase.objects.get(movie_index=movie_index).id
+                is_rated = MovieRatings.objects.get(user_id=request.user.id,
+                                                    movie_id=actual).rating
+
             except MovieRatings.DoesNotExist:
                 pass
 
         if movie_index >= 10000:
-            return render(request, 'movie_recommend.html', {'movie': movie, 'recommend_movies': "recommend_movies"})
+            context = {
+                'movie': movie,
+                'recommend_movies': "recommend_movies",
+                'is_rated': is_rated
+            }
+            return render(request, 'movie_recommend.html', context=context)
 
         recommend_movies = tuple(self.get_recommendations(movie.title))
-        recommend_movies = MovieDatabase.objects.filter(movie_index__in=recommend_movies)
+        recommend_movies = MovieDatabase.objects.filter(
+            movie_index__in=recommend_movies)
 
-        context = {'movie': movie, 'recommend_movies': recommend_movies, 'is_rated': is_rated}
+        context = {
+            'movie': movie,
+            'recommend_movies': recommend_movies,
+            'is_rated': is_rated
+        }
         return render(request, 'movie_recommend.html', context=context)
 
     def get_index_from_title(self, title):
@@ -255,12 +292,16 @@ class MovieDetailView(View):
 
         rated = float(request.POST["rating"])
         date = str(timezone.now())
-        rating = MovieRatings(user_id=request.user.id, rating=rated, movie_id=movie_index, timestamp=date)
+
+        actual = MovieDatabase.objects.get(movie_index=movie_index).id
+
+        rating = MovieRatings(user_id=request.user.id, rating=rated,
+                              movie_id=actual, timestamp=date)
         rating.save()
 
         with open("rcsystem/static/movies_ratings.csv", "a") as f:
-            append = str(request.user.id) + "," + str(movie_index) + "," + str(rated) + "," + str(
-                int(time.time())) + "\n"
+            append = str(request.user.id) + "," + str(actual) + "," + \
+                     str(rated) + "," + str(int(time.time())) + "\n"
             f.write(append)
 
         return HttpResponseRedirect(self.request.path_info)
@@ -271,10 +312,12 @@ class Search(View):
         search_term = request.GET.get('search')
 
         if request.GET.get('submit') == 'Search books':
-            searched_for = BookDatabase.objects.all().filter(title__icontains=search_term)[:50]
+            searched_for = BookDatabase.objects.all().filter(
+                title__icontains=search_term)[:50]
             search_type = "books"
         elif request.GET.get('submit') == 'Search movies':
-            searched_for = MovieDatabase.objects.all().filter(title__icontains=search_term)[:50]
+            searched_for = MovieDatabase.objects.all().filter(
+                title__icontains=search_term)[:50]
             search_type = "movies"
         else:
             return HttpResponseRedirect(reverse('recommender:index'))
@@ -287,7 +330,9 @@ class Search(View):
             searched_for = paginator.page(1)
         except EmptyPage:
             searched_for = paginator.page(paginator.num_pages)
-        return render(request, 'search.html', {'searched': searched_for, "search_type": search_type})
+
+        context = {'searched': searched_for, "search_type": search_type}
+        return render(request, 'search.html', context=context)
 
 
 class AddBook(View):
@@ -349,7 +394,9 @@ class OldBooksView(View):
                 book_isbn = query[len('add-to-your-book-'):]
                 book = DBBook.objects.get(pk=book_isbn)
                 if request.user.is_authenticated:
-                    entity = DBUserAddedBook(user=User.objects.get(username=request.user).id, user_book=book)
+                    entity = DBUserAddedBook(
+                        user=User.objects.get(username=request.user).id,
+                        user_book=book)
                     entity.save()
 
                 return HttpResponseRedirect(self.request.path_info)
@@ -367,19 +414,19 @@ class OldBookDetail(View):
         is_rated = 0
         if request.user.is_authenticated:
             try:
-                is_rated = DBUserRatedBook.objects.get(user=User.objects.get(username=request.user).id, book=book)
+                is_rated = DBUserRatedBook.objects.get(
+                    user=User.objects.get(username=request.user).id, book=book)
                 is_rated = is_rated.user_rated
             except DBUserRatedBook.DoesNotExist:
                 is_rated = 0
 
-        return render(request, 'old_book_detail.html',
-                      {
-                          'book': book,
-                          'form': form,
-                          'favorite': user_rating,
-                          'user_rated': is_rated,
-                      }
-                      )
+        context = {
+            'book': book,
+            'form': form,
+            'favorite': user_rating,
+            'user_rated': is_rated,
+        }
+        return render(request, 'old_book_detail.html', context=context)
 
     def post(self, request, pk):
         book = get_object_or_404(DBBook, pk=pk)
@@ -401,7 +448,10 @@ class OldBookDetail(View):
             total_point = average * count
             count += 1
             overall = (total_point + user_rated) / count
-            DBBook.objects.filter(pk=book.pk).update(book_favorites_count=count, book_overall_favorite=overall)
+            DBBook.objects.filter(pk=book.pk).update(
+                book_favorites_count=count,
+                book_overall_favorite=overall
+            )
 
             rated = user_rating.save(commit=False)
             rated.user = User.objects.get(username=request.user)
@@ -411,4 +461,6 @@ class OldBookDetail(View):
             return redirect('recommender:old-book-detail', pk=book.pk)
         else:
             favorite = DBFavoriteSystemForm()
-        return render(request, 'old_book_detail.html', {'form': form, 'favorite': user_rating})
+
+        context = {'form': form, 'favorite': user_rating}
+        return render(request, 'old_book_detail.html', context=context)
