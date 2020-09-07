@@ -4,6 +4,7 @@
 * Books recommender is based on book title, author, genres and description.
 * Movies recommender is based on book title, casts, genres, description and director.
 * User based recommend is supported. Users have to rate at least 5 items to see their recommendations.
+* Recommender models are trained when user rate 5 more books or 5 more movies.
 * Supports user registration, login and logout.
 * Supports adding new books or movies. 
 * Users can rate books or movies which are not rated by user.
@@ -24,7 +25,7 @@
 * (requirements texts are verbose)
 ## Run: ##
 * First you should do MySQL configurations. Once you download the repository run following commands on the same directory with `manage.py`: 
-`python manage.py makemigrations` and `python manage.py migrate` then create sql scripts for given 4 cvs files and users by using code piece from Jupyter Notebook. 
+`python manage.py makemigrations` and `python manage.py migrate` then create sql scripts for given 5 cvs files by typing `python manage.py generate_sql`. 
 Run sql script. Copy your favorite image to _rcsystem/static/rcsystem/images/_. When it is finished run `python manage.py runserver` and go to http://127.0.0.1:8000/.
 Create a new user for you, rate at least 5 books and 5 movies then get your recommended books and movies!
 ## Datasets: ##
@@ -61,8 +62,6 @@ Create a new user for you, rate at least 5 books and 5 movies then get your reco
     </tr>
 </table>
 
-## TODO: ##
-* Add generate sql script python file for book data and ratings, movie data and ratings, auth_user
 ### Bugs and Limitations: ###
 * Only first 30 books or movies are fetching from database. When I fetch all of them, it is trying to send all items to site and this process slows down the system.
 * To speed up and because of not matching user ratings dataset, I use first 671 users from the datasets.
