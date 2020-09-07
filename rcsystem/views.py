@@ -1,37 +1,18 @@
 import time
 
-import pandas as pd
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.views import View
+from django.core import management
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User
 from django.utils import timezone
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
-from surprise import dump
 
 from .models import BookDatabase, BookRatings, MovieDatabase, MovieRatings, \
     DBBook, DBUserAddedBook, DBUserRatedBook
 from .forms import AddBookForm, AddMovieForm, DBCommentForm, \
     DBFavoriteSystemForm, DBUserRatedBookForm
-
-books_dataset = pd.read_csv("rcsystem/static/books_dataset.csv")
-books_count_vec = CountVectorizer(stop_words='english')
-books_count_matrix = books_count_vec.fit_transform(books_dataset['soup'])
-books_cosine_sim = cosine_similarity(books_count_matrix, books_count_matrix)
-
-books_ratings = pd.read_csv("rcsystem/static/books_ratings.csv")
-_, user_based_book_algo = dump.load("rcsystem/static/user_based_book.dump")
-
-movies_dataset = pd.read_csv("rcsystem/static/movies_dataset.csv")
-movies_count_vec = CountVectorizer(stop_words='english')
-movies_count_matrix = movies_count_vec.fit_transform(
-    movies_dataset['soup'][:10000])
-movies_cosine_sim = cosine_similarity(movies_count_matrix, movies_count_matrix)
-
-movies_ratings = pd.read_csv("rcsystem/static/movies_ratings.csv")
-_, user_based_movie_algo = dump.load("rcsystem/static/user_based_movie.dump")
+from .recommender_models import *
 
 
 class HomeView(View):
@@ -41,13 +22,11 @@ class HomeView(View):
 
         ordered_popular_books = []
         for popular_book in popular_books:
-            ordered_popular_books.append(
-                BookDatabase.objects.get(pk=popular_book))
+            ordered_popular_books.append(BookDatabase.objects.get(pk=popular_book))
 
         ordered_popular_movies = []
         for popular_movie in popular_movies:
-            ordered_popular_movies.append(
-                MovieDatabase.objects.get(id=popular_movie))
+            ordered_popular_movies.append(MovieDatabase.objects.get(id=popular_movie))
 
         context = {
             "popular_books": ordered_popular_books,
@@ -89,12 +68,10 @@ class ProfileView(View):
         for b in user_rated_books:
             user_rated_books_list.append(b.book_id)
 
-        user_rated_books = BookDatabase.objects.filter(
-            pk__in=user_rated_books_list)
+        user_rated_books = BookDatabase.objects.filter(pk__in=user_rated_books_list)
         if len(user_rated_books) >= 5:
             recommend_books = tuple(self.get_user_based_recommend(user.id))
-            recommend_books = BookDatabase.objects.filter(
-                pk__in=recommend_books)
+            recommend_books = BookDatabase.objects.filter(pk__in=recommend_books)
         else:
             recommend_books = 0
 
@@ -107,14 +84,10 @@ class ProfileView(View):
         for m in user_rated_movies:
             user_rated_movies_list.append(m.movie_id)
 
-        user_rated_movies = MovieDatabase.objects.filter(
-            id__in=user_rated_movies_list)
+        user_rated_movies = MovieDatabase.objects.filter(id__in=user_rated_movies_list)
         if len(user_rated_movies) >= 5:
-            recommend_movies = tuple(
-                self.get_user_based_recommend(user.id, book=False))
-            print("recommend_movies:", recommend_movies)
-            recommend_movies = MovieDatabase.objects.filter(
-                id__in=recommend_movies)
+            recommend_movies = tuple(self.get_user_based_recommend(user.id, book=False))
+            recommend_movies = MovieDatabase.objects.filter(id__in=recommend_movies)
         else:
             recommend_movies = 0
 
@@ -130,31 +103,27 @@ class ProfileView(View):
     def get_user_based_recommend(self, user_id, book=True):
         if book:
             book_rating_pred = []
-            user_not_rated = books_ratings[
-                ~(books_ratings['user_id'] == user_id)]
+            user_not_rated = books_ratings[~(books_ratings['user_id'] == user_id)]
             for book_id in user_not_rated["book_id"].unique().tolist():
                 pred = user_based_book_algo.predict(user_id, book_id, 3)
                 try:
                     book_rating_pred.append((book_id, pred.est))
                 except:
                     pass
-            book_rating_pred = sorted(book_rating_pred, key=lambda x: x[1],
-                                      reverse=True)[:10]
+            book_rating_pred = sorted(book_rating_pred, key=lambda x: x[1], reverse=True)[:10]
             book_indices = [i[0] for i in book_rating_pred]
             return book_indices
 
         else:
             movie_rating_pred = []
-            user_not_rated = movies_ratings[
-                ~(movies_ratings['user_id'] == user_id)]
+            user_not_rated = movies_ratings[~(movies_ratings['user_id'] == user_id)]
             for movie_id in user_not_rated["movie_id"].unique().tolist():
                 pred = user_based_movie_algo.predict(user_id, movie_id, 3)
                 try:
                     movie_rating_pred.append((movie_id, pred.est))
                 except:
                     pass
-            movie_rating_pred = sorted(movie_rating_pred, key=lambda x: x[1],
-                                       reverse=True)[:10]
+            movie_rating_pred = sorted(movie_rating_pred, key=lambda x: x[1], reverse=True)[:10]
             movie_indices = [i[0] for i in movie_rating_pred]
             return movie_indices
 
@@ -183,8 +152,7 @@ class BooksDetailView(View):
         is_rated = 0
         if request.user.is_authenticated:
             try:
-                is_rated = BookRatings.objects.get(user_id=request.user.id,
-                                                   book_id=pk).rating
+                is_rated = BookRatings.objects.get(user_id=request.user.id, book_id=pk).rating
             except BookRatings.DoesNotExist:
                 pass
 
@@ -219,9 +187,12 @@ class BooksDetailView(View):
         rating.save()
 
         with open("rcsystem/static/books_ratings.csv", "a") as f:
-            append = str(pk) + "," + str(request.user.id) + "," + request.POST[
-                "rating"] + "\n"
+            append = str(pk) + "," + str(request.user.id) + "," + request.POST["rating"] + "\n"
             f.write(append)
+
+        user_rated_books = BookRatings.objects.filter(user_id=request.user.id)
+        if len(user_rated_books) % 5 == 0:
+            management.call_command("train_models", which="books_rated")
 
         return HttpResponseRedirect(self.request.path_info)
 
@@ -251,8 +222,7 @@ class MovieDetailView(View):
         if request.user.is_authenticated:
             try:
                 actual = MovieDatabase.objects.get(movie_index=movie_index).id
-                is_rated = MovieRatings.objects.get(user_id=request.user.id,
-                                                    movie_id=actual).rating
+                is_rated = MovieRatings.objects.get(user_id=request.user.id, movie_id=actual).rating
 
             except MovieRatings.DoesNotExist:
                 pass
@@ -267,8 +237,7 @@ class MovieDetailView(View):
             return render(request, 'movie_recommend.html', context=context)
 
         recommend_movies = tuple(self.get_recommendations(movie.title))
-        recommend_movies = MovieDatabase.objects.filter(
-            movie_index__in=recommend_movies)
+        recommend_movies = MovieDatabase.objects.filter(movie_index__in=recommend_movies)
 
         context = {
             'movie': movie,
@@ -297,14 +266,17 @@ class MovieDetailView(View):
 
         actual = MovieDatabase.objects.get(movie_index=movie_index).id
 
-        rating = MovieRatings(user_id=request.user.id, rating=rated,
-                              movie_id=actual, timestamp=date)
+        rating = MovieRatings(user_id=request.user.id, rating=rated, movie_id=actual, timestamp=date)
         rating.save()
 
         with open("rcsystem/static/movies_ratings.csv", "a") as f:
             append = str(request.user.id) + "," + str(actual) + "," + \
                      str(rated) + "," + str(int(time.time())) + "\n"
             f.write(append)
+
+        user_rated_movies = MovieRatings.objects.filter(user_id=request.user.id)
+        if len(user_rated_movies) % 5 == 0:
+            management.call_command("train_models", which="movies_rated")
 
         return HttpResponseRedirect(self.request.path_info)
 
@@ -314,12 +286,10 @@ class Search(View):
         search_term = request.GET.get('search')
 
         if request.GET.get('submit') == 'Search books':
-            searched_for = BookDatabase.objects.all().filter(
-                title__icontains=search_term)[:50]
+            searched_for = BookDatabase.objects.filter(title__icontains=search_term)[:50]
             search_type = "books"
         elif request.GET.get('submit') == 'Search movies':
-            searched_for = MovieDatabase.objects.all().filter(
-                title__icontains=search_term)[:50]
+            searched_for = MovieDatabase.objects.filter(title__icontains=search_term)[:50]
             search_type = "movies"
         else:
             return HttpResponseRedirect(reverse('recommender:index'))
@@ -354,6 +324,12 @@ class AddBook(View):
         else:
             form = AddBookForm()
 
+        with open("rcsystem/static/books_dataset.csv", "a") as f:
+            # should save to dataset but it is too long
+            pass
+
+        management.call_command("train_models", which="books")
+
         return render(request, "add_item.html", {"form": form})
 
 
@@ -373,6 +349,12 @@ class AddMovie(View):
             return HttpResponseRedirect(reverse('recommender:index'))
         else:
             form = AddMovieForm()
+
+        with open("rcsystem/static/movies_dataset.csv", "a") as f:
+            # should save to dataset but it is too long
+            pass
+
+        management.call_command("train_models", which="books")
 
         return render(request, "add_item.html", {"form": form})
 
