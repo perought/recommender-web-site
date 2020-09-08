@@ -1,18 +1,15 @@
-import time
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.views import View
-from django.core import management
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User
-from django.utils import timezone
 
 from .models import BookDatabase, BookRatings, MovieDatabase, MovieRatings, \
     DBBook, DBUserAddedBook, DBUserRatedBook
 from .forms import AddBookForm, AddMovieForm, DBCommentForm, \
     DBFavoriteSystemForm, DBUserRatedBookForm
 from .recommender_models import *
+from .utils import ItemViewMixin, ItemAddView, ItemDetailView
 
 
 class HomeView(View):
@@ -124,162 +121,40 @@ class ProfileView(View):
                 except:
                     pass
             movie_rating_pred = sorted(movie_rating_pred, key=lambda x: x[1], reverse=True)[:10]
-            print("movie_rating_pred:", movie_rating_pred)
             movie_indices = [i[0] for i in movie_rating_pred]
             return movie_indices
 
 
-class BooksView(View):
-    def get(self, request):
-        all_books = BookDatabase.objects.all()[:30]
-        book_page_1 = request.GET.get('page', 1)
-        paginator = Paginator(all_books, 10)
-        try:
-            books = paginator.page(book_page_1)
-        except PageNotAnInteger:
-            books = paginator.page(1)
-        except EmptyPage:
-            books = paginator.page(paginator.num_pages)
-        return render(request, "books.html", context={"books": books})
+class BooksView(ItemViewMixin, View):
+    model = BookDatabase
+    template = "books.html"
+    context_name = "books"
 
 
-class BooksDetailView(View):
-    def get(self, request, pk):
-        try:
-            book = BookDatabase.objects.get(pk=pk)
-        except BookDatabase.DoesNotExist:
-            return HttpResponseRedirect(reverse('recommender:index'))
-
-        is_rated = 0
-        if request.user.is_authenticated:
-            try:
-                is_rated = BookRatings.objects.get(user_id=request.user.id, book_id=pk).rating
-            except BookRatings.DoesNotExist:
-                pass
-
-        recommend_books = tuple(self.get_recommendations(book.title))
-        recommend_books = BookDatabase.objects.filter(pk__in=recommend_books)
-
-        context = {
-            'book': book,
-            'recommend_books': recommend_books,
-            'is_rated': is_rated,
-            'user': request.user
-        }
-        return render(request, 'book_recommend.html', context=context)
-
-    def get_index_from_title(self, title):
-        return books_dataset[books_dataset["title"] == title]["id"].values[0]
-
-    def get_recommendations(self, title):
-        idx = int(self.get_index_from_title(title))
-        sim_scores = list(enumerate(books_cosine_sim[idx]))
-        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:11]
-        book_indices = [i[0] for i in sim_scores]
-        return books_dataset['title'].iloc[book_indices].index.tolist()
-
-    def post(self, request, pk):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('recommender:index'))
-
-        rated = int(request.POST["rating"])
-        rating = BookRatings(rating=rated, book_id=pk, user_id=request.user.id)
-        rating.save()
-
-        with open("rcsystem/static/books_ratings.csv", "a") as f:
-            append = str(pk) + "," + str(request.user.id) + "," + request.POST["rating"] + "\n"
-            f.write(append)
-
-        user_rated_books = BookRatings.objects.filter(user_id=request.user.id)
-        if len(user_rated_books) % 5 == 0:
-            management.call_command("train_models", which="books_rated")
-
-        return HttpResponseRedirect(self.request.path_info)
+class BooksDetailView(ItemDetailView, View):
+    model = BookDatabase
+    model_ratings = BookRatings
+    template = "book_recommend.html"
+    item_name = "books"
+    item_name_singular = "book"
+    dataset = books_dataset
+    cosine_sim = books_cosine_sim
 
 
-class MovieView(View):
-    def get(self, request):
-        all_movies = MovieDatabase.objects.all()[:30]
-        movies_page_1 = request.GET.get('page', 1)
-        paginator = Paginator(all_movies, 10)
-        try:
-            movies = paginator.page(movies_page_1)
-        except PageNotAnInteger:
-            movies = paginator.page(1)
-        except EmptyPage:
-            movies = paginator.page(paginator.num_pages)
-        return render(request, "movies.html", context={"movies": movies})
+class MoviesView(ItemViewMixin, View):
+    model = MovieDatabase
+    template = "movies.html"
+    context_name = "movies"
 
 
-class MovieDetailView(View):
-    def get(self, request, movie_index):
-        try:
-            movie = MovieDatabase.objects.get(movie_index=movie_index)
-        except MovieDatabase.DoesNotExist:
-            return HttpResponseRedirect(reverse('recommender:index'))
-
-        is_rated = 0
-        if request.user.is_authenticated:
-            try:
-                actual = MovieDatabase.objects.get(movie_index=movie_index).id
-                is_rated = MovieRatings.objects.get(user_id=request.user.id, movie_id=actual).rating
-
-            except MovieRatings.DoesNotExist:
-                pass
-
-        if movie_index >= 10000:
-            context = {
-                'movie': movie,
-                'recommend_movies': "recommend_movies",
-                'is_rated': is_rated,
-                'user': request.user
-            }
-            return render(request, 'movie_recommend.html', context=context)
-
-        recommend_movies = tuple(self.get_recommendations(movie.title))
-        recommend_movies = MovieDatabase.objects.filter(movie_index__in=recommend_movies)
-
-        context = {
-            'movie': movie,
-            'recommend_movies': recommend_movies,
-            'is_rated': is_rated
-        }
-        return render(request, 'movie_recommend.html', context=context)
-
-    def get_index_from_title(self, title):
-        return movies_dataset[movies_dataset["title"] == title].index[0]
-
-    def get_recommendations(self, title):
-        movie_index = int(self.get_index_from_title(title))
-        similar_movies = list(enumerate(movies_cosine_sim[movie_index]))
-        sortedmovies = sorted(similar_movies, key=lambda x: x[1], reverse=True)
-        sim_scores = sortedmovies[1:11]
-        movie_indices = [i[0] for i in sim_scores]
-        return movies_dataset['title'].iloc[movie_indices].index.tolist()
-
-    def post(self, request, movie_index):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('recommender:index'))
-
-        rated = float(request.POST["rating"])
-        date = str(timezone.now())
-
-        actual = MovieDatabase.objects.get(movie_index=movie_index).id
-
-        rating = MovieRatings(user_id=request.user.id, rating=rated, movie_id=actual, timestamp=date)
-        rating.save()
-
-        with open("rcsystem/static/movies_ratings.csv", "a") as f:
-            append = str(request.user.id) + "," + str(actual) + "," + \
-                     str(rated) + "," + str(int(time.time())) + "\n"
-            f.write(append)
-
-        user_rated_movies = MovieRatings.objects.filter(user_id=request.user.id)
-        if len(user_rated_movies) % 5 == 0:
-            management.call_command("train_models", which="movies_rated")
-
-        return HttpResponseRedirect(self.request.path_info)
+class MoviesDetailView(ItemDetailView, View):
+    model = MovieDatabase
+    model_ratings = MovieRatings
+    template = "movie_recommend.html"
+    item_name = "movies"
+    item_name_singular = "movie"
+    dataset = movies_dataset
+    cosine_sim = movies_cosine_sim
 
 
 class Search(View):
@@ -308,56 +183,14 @@ class Search(View):
         return render(request, 'search.html', context=context)
 
 
-class AddBook(View):
-    def get(self, request):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('recommender:index'))
-        form = AddBookForm()
-        return render(request, "add_item.html", {"form": form})
-
-    def post(self, request):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('recommender:index'))
-        form = AddBookForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('recommender:index'))
-        else:
-            form = AddBookForm()
-
-        with open("rcsystem/static/books_dataset.csv", "a") as f:
-            # should save to dataset but it is too long
-            pass
-
-        management.call_command("train_models", which="books")
-
-        return render(request, "add_item.html", {"form": form})
+class AddBook(ItemAddView, View):
+    Form = AddBookForm
+    item_name = "books"
 
 
-class AddMovie(View):
-    def get(self, request):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('recommender:index'))
-        form = AddMovieForm()
-        return render(request, "add_item.html", {"form": form})
-
-    def post(self, request):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('recommender:index'))
-        form = AddMovieForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('recommender:index'))
-        else:
-            form = AddMovieForm()
-
-        with open("rcsystem/static/movies_dataset.csv", "a") as f:
-            # should save to dataset but it is too long
-            pass
-
-        management.call_command("train_models", which="books")
-
-        return render(request, "add_item.html", {"form": form})
+class AddMovie(ItemAddView, View):
+    Form = AddMovieForm
+    item_name = "movies"
 
 
 class OldBooksView(View):

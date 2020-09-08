@@ -157,7 +157,7 @@
                                     <img src="{{ movie.poster }}" alt="" width="98" height="160">
                                 </div>
                                 <div class="col">
-                                    <a href="{% url 'recommender:movie-recommender' movie.movie_index %}">
+                                    <a href="{% url 'recommender:movie-recommender' movie.id %}">
                                         <span class="entry-title"> {{ movie.title }} </span>
                                     </a>
                                     <br/>

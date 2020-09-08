@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import Search, OldBookDetail, AddBook, AddMovie, BooksView, \
-    BooksDetailView, MovieView, MovieDetailView, ProfileView, HomeView, OldBooksView
+    BooksDetailView, MoviesView, MoviesDetailView, ProfileView, HomeView, OldBooksView
 
 app_name = 'recommender'
 
@@ -10,8 +10,8 @@ urlpatterns = [
 
     path('profile/<int:pk>', ProfileView.as_view(), name='profile'),
 
-    path('movies/', MovieView.as_view(), name='movies'),
-    path('movies/<int:movie_index>/', MovieDetailView.as_view(), name='movie-recommender'),
+    path('movies/', MoviesView.as_view(), name='movies'),
+    path('movies/<int:pk>/', MoviesDetailView.as_view(), name='movie-recommender'),
 
     path('books/', BooksView.as_view(), name='books'),
     path('books/<int:pk>', BooksDetailView.as_view(), name='book-recommender'),

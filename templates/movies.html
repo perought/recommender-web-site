@@ -54,7 +54,7 @@
                         <img src="{{ movie.poster }}" alt="" width="182" height="268">
                     </div>
                     <div class="col col-8">
-                        <a href="{% url 'recommender:movie-recommender' movie.movie_index %}">
+                        <a href="{% url 'recommender:movie-recommender' movie.id %}">
                             <span class="movie-title"> {{ movie.title }} </span>
                         </a>
                         <br/>
