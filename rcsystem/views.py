@@ -124,6 +124,7 @@ class ProfileView(View):
                 except:
                     pass
             movie_rating_pred = sorted(movie_rating_pred, key=lambda x: x[1], reverse=True)[:10]
+            print("movie_rating_pred:", movie_rating_pred)
             movie_indices = [i[0] for i in movie_rating_pred]
             return movie_indices
 

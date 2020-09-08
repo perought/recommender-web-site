@@ -14,7 +14,7 @@ class Command(BaseCommand):
             ["books_ratings", "rcsystem_bookratings"],
             ["movies_dataset_ascii", "rcsystem_moviedatabase"],
             ["movies_ratings", "rcsystem_movieratings"],
-            ["users_script", "auth_user"]
+            ["users_script", "auth_user"]  # password: djangouser1
         ]
         for dataset in datasets:
             with open('rcsystem/static/' + dataset[0] + '.csv', 'r') as f:
