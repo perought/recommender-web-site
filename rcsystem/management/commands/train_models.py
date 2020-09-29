@@ -5,6 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from surprise.model_selection import KFold
 from surprise import Reader, Dataset, SVD, accuracy, dump
+from fastai.collab import CollabDataLoaders, collab_learner
 
 import rcsystem.recommender_models as rec_models
 
@@ -24,6 +25,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('books updated'))
 
         if options["which"] == "books_rated":
+            # surprise model
             rec_models.books_ratings = pd.read_csv("rcsystem/static/books_ratings.csv")
             reader = Reader()
             data = Dataset.load_from_df(rec_models.books_ratings[['user_id', 'book_id', 'rating']], reader)
@@ -41,7 +43,15 @@ class Command(BaseCommand):
             dump.dump("rcsystem/static/user_based_book.dump", algo=svd)
             rec_models.user_based_book_algo = svd
 
-            self.stdout.write(self.style.SUCCESS('user_based_book_algo updated'))
+            # fastai model
+            rec_models.books_ratings_title = pd.read_csv("rcsystem/static/books_ratings_with_title.csv")
+            rec_models.books_dls = CollabDataLoaders.from_df(rec_models.books_ratings, item_name='title', seed=1)
+            rec_models.books_collab_filtering = collab_learner(rec_models.books_dls, y_range=(0.5, 5.5))
+            rec_models.books_collab_filtering.model_dir = "."
+            rec_models.books_collab_filtering.fine_tune(1, wd=0.1)  # could be more epochs
+            rec_models.books_collab_filtering.save("rcsystem/static/books_collab_filtering")
+
+            self.stdout.write(self.style.SUCCESS('books collaborative filtering updated'))
 
         if options["which"] == "movies":
             rec_models.movies_dataset = pd.read_csv("rcsystem/static/movies_dataset.csv")
@@ -51,6 +61,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('movies updated'))
 
         if options["which"] == "movies_rated":
+            # surprise model
             rec_models.books_ratings = pd.read_csv("rcsystem/static/movies_ratings.csv")
             reader = Reader()
             data = Dataset.load_from_df(rec_models.books_ratings[['user_id', 'movie_id', 'rating']], reader)
@@ -68,4 +79,12 @@ class Command(BaseCommand):
             dump.dump("rcsystem/static/user_based_movie.dump", algo=svd)
             rec_models.user_based_movie_algo = svd
 
-            self.stdout.write(self.style.SUCCESS('user_based_movie_algo updated'))
+            # fastai model
+            rec_models.movies_ratings_title = pd.read_csv("rcsystem/static/movies_ratings_with_title.csv")
+            rec_models.movies_dls = CollabDataLoaders.from_df(rec_models.movies_ratings, item_name='title', seed=1)
+            rec_models.movies_collab_filtering = collab_learner(rec_models.movies_dls, y_range=(0.5, 5.5))
+            rec_models.movies_collab_filtering.model_dir = "."
+            rec_models.movies_collab_filtering.fine_tune(1, wd=0.1)  # could be more epochs
+            rec_models.movies_collab_filtering.save("rcsystem/static/movies_collab_filtering")
+
+            self.stdout.write(self.style.SUCCESS('movies collaborative filtering updated'))

@@ -1,3 +1,4 @@
+import torch
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.views import View
@@ -48,8 +49,8 @@ class HomeView(View):
 
 class ProfileView(View):
     def get(self, request, pk):
-        if not request.user.is_authenticated or request.user.id != pk:
-            return HttpResponseRedirect(reverse('recommender:index'))
+        # if not request.user.is_authenticated or request.user.id != pk:
+        #    return HttpResponseRedirect(reverse('recommender:index'))
 
         try:
             user = User.objects.get(id=pk)
@@ -67,7 +68,8 @@ class ProfileView(View):
 
         user_rated_books = BookDatabase.objects.filter(pk__in=user_rated_books_list)
         if len(user_rated_books) >= 5:
-            recommend_books = tuple(self.get_user_based_recommend(user.id))
+            # recommend_books = tuple(self.get_user_based_recommend(user.id))
+            recommend_books = self.rec_item_for_user(user.id, books_collab_filtering, books_dls.items)
             recommend_books = BookDatabase.objects.filter(pk__in=recommend_books)
         else:
             recommend_books = 0
@@ -83,7 +85,9 @@ class ProfileView(View):
 
         user_rated_movies = MovieDatabase.objects.filter(id__in=user_rated_movies_list)
         if len(user_rated_movies) >= 5:
-            recommend_movies = tuple(self.get_user_based_recommend(user.id, book=False))
+            # recommend_movies = tuple(self.get_user_based_recommend(user.id, book=False))
+            recommend_movies = self.rec_item_for_user(user.id, movies_collab_filtering, movies_dls.items, search="movie_id")
+            recommend_movies = movies_dataset[movies_dataset["movie_id"].isin(recommend_movies)]["id"].unique()
             recommend_movies = MovieDatabase.objects.filter(id__in=recommend_movies)
         else:
             recommend_movies = 0
@@ -96,6 +100,20 @@ class ProfileView(View):
             'recommend_movies': recommend_movies,
         }
         return render(request, 'profile.html', context)
+
+    def get_user_not_rated(self, user_id, ratings):
+        items = set(ratings["title"].unique()) - set(ratings[ratings["user_id"] == user_id]["title"].unique())
+        u_m = list(zip([user_id] * len(items), items))
+        return torch.tensor(u_m, device="cuda:0"), torch.zeros(len(items), 1, device="cuda:0")
+
+    def rec_item_for_user(self, user_id, learned, ratings, search="book_id"):
+        user_item, user_rate = self.get_user_not_rated(user_id, ratings)
+        preds, _ = learned.get_preds(dl=[(user_item, user_rate)])
+        title_preds = list(zip(user_item[:, 1].tolist(), preds.tolist()))
+        title_preds = sorted(title_preds, key=lambda x: x[1], reverse=True)
+        preds = [title_id[0] for title_id in title_preds[:10]]
+        rec_item_id = ratings[ratings["title"].isin(preds)][search].unique()
+        return rec_item_id
 
     def get_user_based_recommend(self, user_id, book=True):
         if book:

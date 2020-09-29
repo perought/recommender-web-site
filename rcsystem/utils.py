@@ -131,10 +131,12 @@ class ItemDetailView:
             rating.save()
 
         with open("rcsystem/static/" + self.item_name + "_ratings.csv", "a") as f:
+            item_title = self.model.objects.get(pk=pk).title
+            append = str(request.user.id) + "," + str(pk) + "," + str(rated) + ","
             if self.item_name == "books":
-                append = str(pk) + "," + str(request.user.id) + "," + str(rated) + "\n"
+                append += str(item_title) + "\n"
             elif self.item_name == "movies":
-                append = str(request.user.id) + "," + str(pk) + "," + str(rated) + "," + str(int(time.time())) + "\n"
+                append += str(int(time.time())) + "," + str(item_title) + "\n"
             f.write(append)
 
         user_rated_items = self.model_ratings.objects.filter(user_id=request.user.id)
