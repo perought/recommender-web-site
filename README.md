@@ -22,6 +22,7 @@
 * scikit-surprise
 * Bootstrap 4
 * django-crispy-forms
+* fastai
 * (requirements texts are verbose)
 ## Run: ##
 * First you should do MySQL configurations. Once you download the repository run following commands on the same directory with `manage.py`: 
