@@ -91,10 +91,9 @@ class ItemDetailView:
             return render(request, 'movie_recommend.html', context=context)
 
         recommend_items = tuple(self.get_recommendations(item.title))
-        if self.item_name == "books":
-            recommend_items = self.model.objects.filter(pk__in=recommend_items)
-        elif self.item_name == "movies":
-            recommend_items = self.model.objects.filter(movie_index__in=recommend_items)
+        if self.item_name == "movies":
+            recommend_items = self.dataset.loc[list(recommend_items)]["id"]
+        recommend_items = self.model.objects.filter(pk__in=recommend_items)
 
         context = {
             self.item_name_singular: item,

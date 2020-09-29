@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from surprise.model_selection import KFold
 from surprise import Reader, Dataset, SVD, accuracy, dump
 from fastai.collab import CollabDataLoaders, collab_learner
@@ -18,10 +18,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options["which"] == "books":
-            rec_models.books_dataset = pd.read_csv("rcsystem/static/books_dataset.csv")
+            """
             rec_models.books_count_vec = CountVectorizer(stop_words='english')
             rec_models.books_count_matrix = rec_models.books_count_vec.fit_transform(rec_models.books_dataset['soup'])
             rec_models.books_cosine_sim = cosine_similarity(rec_models.books_count_matrix, rec_models.books_count_matrix)
+            """
+
+            rec_models.books_dataset = pd.read_csv("rcsystem/static/books_dataset.csv")
+            rec_models.books_tf = TfidfVectorizer(analyzer="word", ngram_range=(1, 2), min_df=0, stop_words='english')
+            rec_models.books_tfidf_matrix = rec_models.books_tf.fit_transform(rec_models.books_dataset['soup'])
+            rec_models.books_cosine_sim = cosine_similarity(rec_models.books_tfidf_matrix, rec_models.books_tfidf_matrix)
+
             self.stdout.write(self.style.SUCCESS('books updated'))
 
         if options["which"] == "books_rated":
@@ -54,10 +61,17 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('books collaborative filtering updated'))
 
         if options["which"] == "movies":
-            rec_models.movies_dataset = pd.read_csv("rcsystem/static/movies_dataset.csv")
+            """
             rec_models.movies_count_vec = CountVectorizer(stop_words='english')
             rec_models.movies_count_matrix = rec_models.movies_count_vec.fit_transform(rec_models.movies_dataset['soup'][:10000])
             rec_models.movies_cosine_sim = cosine_similarity(rec_models.movies_count_matrix, rec_models.movies_count_matrix)
+            """
+
+            rec_models.movies_dataset = pd.read_csv("rcsystem/static/movies_dataset.csv")
+            rec_models.movies_tf = TfidfVectorizer(analyzer="word", ngram_range=(1, 2), min_df=0, stop_words='english')
+            rec_models.movies_tfidf_matrix = rec_models.movies_tf.fit_transform(rec_models.movies_dataset['soup'])
+            rec_models.movies_cosine_sim = cosine_similarity(rec_models.movies_cosine_sim, rec_models.movies_cosine_sim)
+
             self.stdout.write(self.style.SUCCESS('movies updated'))
 
         if options["which"] == "movies_rated":

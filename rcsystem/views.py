@@ -49,8 +49,8 @@ class HomeView(View):
 
 class ProfileView(View):
     def get(self, request, pk):
-        # if not request.user.is_authenticated or request.user.id != pk:
-        #    return HttpResponseRedirect(reverse('recommender:index'))
+        if not request.user.is_authenticated or request.user.id != pk:
+            return HttpResponseRedirect(reverse('recommender:index'))
 
         try:
             user = User.objects.get(id=pk)

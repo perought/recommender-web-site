@@ -1,14 +1,20 @@
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from surprise import dump
 from fastai.collab import CollabDataLoaders, collab_learner
 
 # 1A) Books items
-books_dataset = pd.read_csv("rcsystem/static/books_dataset.csv")
+"""
 books_count_vec = CountVectorizer(stop_words='english')
 books_count_matrix = books_count_vec.fit_transform(books_dataset['soup'])
 books_cosine_sim = cosine_similarity(books_count_matrix, books_count_matrix)
+"""
+
+books_dataset = pd.read_csv("rcsystem/static/books_dataset.csv")
+books_tf = TfidfVectorizer(analyzer="word", ngram_range=(1, 2), min_df=0, stop_words='english')
+books_tfidf_matrix = books_tf.fit_transform(books_dataset['soup'])
+books_cosine_sim = cosine_similarity(books_tfidf_matrix, books_tfidf_matrix)
 
 # 1B) Books users
 books_ratings = pd.read_csv("rcsystem/static/books_ratings.csv")
@@ -24,10 +30,16 @@ books_collab_filtering.model_dir = "."
 books_collab_filtering = books_collab_filtering.load("rcsystem/static/books_collab_filtering")
 
 # 2A) Movies items
-movies_dataset = pd.read_csv("rcsystem/static/movies_dataset.csv")
+"""
 movies_count_vec = CountVectorizer(stop_words='english')
 movies_count_matrix = movies_count_vec.fit_transform(movies_dataset['soup'][:10000])
 movies_cosine_sim = cosine_similarity(movies_count_matrix, movies_count_matrix)
+"""
+
+movies_dataset = pd.read_csv("rcsystem/static/movies_dataset.csv")
+movies_tf = TfidfVectorizer(analyzer="word", ngram_range=(1, 2), min_df=0, stop_words='english')
+movies_tfidf_matrix = movies_tf.fit_transform(movies_dataset['soup'][:10000])
+movies_cosine_sim = cosine_similarity(movies_tfidf_matrix, movies_tfidf_matrix)
 
 # 2B) Movies users
 movies_ratings = pd.read_csv("rcsystem/static/movies_ratings.csv")
